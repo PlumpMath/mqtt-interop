@@ -1,16 +1,16 @@
 """
 *******************************************************************
   Copyright (c) 2013, 2014 IBM Corp.
- 
+
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
-  and Eclipse Distribution License v1.0 which accompany this distribution. 
- 
-  The Eclipse Public License is available at 
+  and Eclipse Distribution License v1.0 which accompany this distribution.
+
+  The Eclipse Public License is available at
      http://www.eclipse.org/legal/epl-v10.html
-  and the Eclipse Distribution License is available at 
+  and the Eclipse Distribution License is available at
     http://www.eclipse.org/org/documents/edl-v10.php.
- 
+
   Contributors:
      Ian Craggs - initial implementation and/or documentation
 *******************************************************************
@@ -19,10 +19,10 @@
 """
 
 	values of parameters to controllable actions can come from several sources:
-	
+
 		1) created as a result of other actions, either controllable or observable
 			(keep a pool of results obtained)
-		
+
 		2) specific sets of values enumerated in the model
 
 
@@ -114,8 +114,8 @@ class Traces:
 		logger.debug("NODE index is now %d", self.curnode.index)
 
 	def addArcs(self, arcs):
-		""" 
-		In a particular state, enumerate all the paths available to leave that state.  
+		"""
+		In a particular state, enumerate all the paths available to leave that state.
 		"""
 		if not self.curnode.arcsAdded:
 			for arc in arcs:
@@ -144,13 +144,13 @@ class Traces:
 		if len(frees) > 0:
 			if callback:
 				frees = callback(frees) # allow the test model to restrict choice
-			found = random.choice(frees) 
+			found = random.choice(frees)
 
 		return found
 
 
 def combine(lista, listb):
-	""" 
+	"""
 	lista is a list of lists
 	listb is a list of any sort of elements
 	"""
@@ -230,16 +230,16 @@ class Models:
 		self.return_types = [] # names of return_types
 		self.finisheds = {}
 		self.maxobjects = {}
-		self.selectCallback = None	
+		self.selectCallback = None
 		self.restartCallback = None
-	
+
 	def getActionNames(self):
 		return [action.getName() for action in self.actions]
 
 	def addReturnType(self, return_type):
-		""" 
+		"""
 		return types should not be in the datapools if they
-		can be created by having been mentioned in the data 
+		can be created by having been mentioned in the data
 		inputs
 		"""
 		if return_type not in self.choices.keys():
@@ -250,9 +250,9 @@ class Models:
 		self.actions.append(Actions(fn))
 		if "return" in fn.__annotations__.keys():
 			self.addReturnType(fn.__annotations__["return"])
-		
+
 	def addChoice(self, varname, values, output=False):
-		""" 
+		"""
 		Need to track choices for coverage - wrap each choice in a class so we can
 		keep track
 		"""
@@ -279,7 +279,7 @@ class Executions:
 		self.pools = copy.deepcopy(self.model.choices)
 
 	def addObservation(self, observation):
-		""" 
+		"""
 		Used during model exploration to add an observation.
 		"""
 		self.observations.append(observation)
@@ -287,7 +287,7 @@ class Executions:
 
 	def removeFinisheds(self, action, kwargs):
 		"""
-		used during execution to remove choices which 
+		used during execution to remove choices which
 		"""
 		removed = False
 		for parm_name in action.getParmNames():
@@ -364,21 +364,21 @@ class Executions:
 			counts[choice] = [(c.value, c.used) for c in self.pools[choice]]
 		logger.debug("choice counts %d", counts)
 		logger.info("coverage %d%%", self.coverage())
-		
+
 	def __run__(self, interactive=True):
 		while not self.finished:
 			self.step(interactive)
 
 	def step(self, interactive=False):
 			restart = False
-			self.steps += 1 
+			self.steps += 1
 			logger.debug("Steps: %d coverage %d%%", self.steps, self.coverage())
 			enableds = self.getEnabledActions()
 			logger.debug("Enabled %s", [e.getName() for e in enableds])
-			
+
 			self.trace.addArcs([tuple([action] + choice) for action in enableds \
 						    for choice in action.enumerateChoices(self.pools)])
-			
+
 			next = self.trace.findNextPath(self.model.selectCallback)
 			if next == None:
 				logger.debug("No more options available")
@@ -418,19 +418,19 @@ class Executions:
 				if rc != None:
 					logger.info("RESULT from %s is %s", action.getName(), rc)
 					ret_type = action.getReturnType()
-					
+
 					if ret_type:
 						updated = False
 						for c in self.pools[ret_type]:
 							if c.equals(rc):
-								c.used += 1 
+								c.used += 1
 								updated = True
 								break
 						if not updated and hasattr(self.pools[ret_type], "append"):
 							self.pools[ret_type].append(Choices(rc, returned=True))
 
 				self.removeFinisheds(action, kwargs)
-			return restart		
+			return restart
 
 	def run(self, interactive=True):
 		try:
@@ -475,7 +475,7 @@ class Tests:
 		if self.stepping and input("--->") == "q":
 			return
 		try:
-			rc = action(**kwargs)           
+			rc = action(**kwargs)
 		except:
 			rc = "exception "+traceback.format_exc()
 		self.last_action = action
@@ -569,16 +569,3 @@ class Tests:
 	def addResult(self, result):
 		self.logger.debug("adding result %s", result)
 		self.added_results[str(result)] = result
-		
-
-			
-
-				
-
-			
-
-		
-		
-	
-		
-		

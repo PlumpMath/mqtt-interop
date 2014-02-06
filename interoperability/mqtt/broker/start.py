@@ -1,16 +1,16 @@
 """
 *******************************************************************
   Copyright (c) 2013, 2014 IBM Corp.
- 
+
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
-  and Eclipse Distribution License v1.0 which accompany this distribution. 
- 
-  The Eclipse Public License is available at 
+  and Eclipse Distribution License v1.0 which accompany this distribution.
+
+  The Eclipse Public License is available at
      http://www.eclipse.org/legal/epl-v10.html
-  and the Eclipse Distribution License is available at 
+  and the Eclipse Distribution License is available at
     http://www.eclipse.org/org/documents/edl-v10.php.
- 
+
   Contributors:
      Ian Craggs - initial implementation and/or documentation
 *******************************************************************
@@ -84,7 +84,7 @@ def run(publish_on_pubrel=True, overlapping_single=True, dropQoS0=True):
     server.server_activate()
     server.serve_forever()
   except KeyboardInterrupt:
-    pass 
+    pass
   except:
     logger.exception("startBroker")
   finally:
@@ -96,7 +96,7 @@ def run(publish_on_pubrel=True, overlapping_single=True, dropQoS0=True):
   server = None
   logger.info("Stopping the MQTT server on port %d", port)
   handler.measure()
-  
+
 
 def stop():
   global server

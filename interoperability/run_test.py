@@ -1,16 +1,16 @@
 """
 *******************************************************************
   Copyright (c) 2013, 2014 IBM Corp.
- 
+
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
-  and Eclipse Distribution License v1.0 which accompany this distribution. 
- 
-  The Eclipse Public License is available at 
+  and Eclipse Distribution License v1.0 which accompany this distribution.
+
+  The Eclipse Public License is available at
      http://www.eclipse.org/legal/epl-v10.html
-  and the Eclipse Distribution License is available at 
+  and the Eclipse Distribution License is available at
     http://www.eclipse.org/org/documents/edl-v10.php.
- 
+
   Contributors:
      Ian Craggs - initial implementation and/or documentation
 *******************************************************************
@@ -48,14 +48,14 @@ def cleanup():
 		aclient.disconnect()
 		time.sleep(.1)
 
-	# clean retained messages 
+	# clean retained messages
 	callback = client_test.Callbacks()
 	aclient = mqtt.client.Client("clean retained".encode("utf-8"))
 	aclient.registerCallback(callback)
 	aclient.connect(host=hostname, port=port, cleansession=True)
 	aclient.subscribe(["#"], [0])
 	time.sleep(2) # wait for all retained messages to arrive
-	for message in callback.messages:  
+	for message in callback.messages:
 		if message[3]: # retained flag
 		  aclient.publish(message[0], b"", 0, retained=True)
 	aclient.disconnect()
@@ -75,6 +75,5 @@ if __name__ == "__main__":
 		checks = {"socket": socket_check, "exception": exception_check}
 		testname = testname if testname.startswith("tests") else "tests/"+testname
 		MQTTV311_spec.test = mbt.Tests(mbt.model, testname, checks, observationMatchCallback=MQTTV311_spec.observationCheckCallback)
-		MQTTV311_spec.test.run(stepping=False)
+ 		MQTTV311_spec.test.run(stepping=False)
 		cleanup()
-

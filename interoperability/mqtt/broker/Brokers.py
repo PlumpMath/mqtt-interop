@@ -1,16 +1,16 @@
 """
 *******************************************************************
   Copyright (c) 2013, 2014 IBM Corp.
- 
+
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
-  and Eclipse Distribution License v1.0 which accompany this distribution. 
- 
-  The Eclipse Public License is available at 
+  and Eclipse Distribution License v1.0 which accompany this distribution.
+
+  The Eclipse Public License is available at
      http://www.eclipse.org/legal/epl-v10.html
-  and the Eclipse Distribution License is available at 
+  and the Eclipse Distribution License is available at
     http://www.eclipse.org/org/documents/edl-v10.php.
- 
+
   Contributors:
      Ian Craggs - initial implementation and/or documentation
 *******************************************************************
@@ -22,7 +22,7 @@ from . import Topics
 from .SubscriptionEngines import SubscriptionEngines
 
 logger = logging.getLogger('MQTT broker')
- 
+
 class Brokers:
 
   def __init__(self, overlapping_single=True):
@@ -73,7 +73,7 @@ class Brokers:
       else:
         logger.info("[MQTT-3.1.2-4] broker must store the session data for client %s", aClientid)
         self.__clients[aClientid].timestamp = time.clock()
-        self.__clients[aClientid].connected = False 
+        self.__clients[aClientid].connected = False
         logger.info("[MQTT-3.1.2-10] will message is deleted after use or disconnect, for client %s", aClientid)
         logger.info("[MQTT-3.14.4-3] on receipt of disconnect, will message is deleted")
         self.__clients[aClientid].will = None
@@ -98,7 +98,7 @@ class Brokers:
         logger.info("[MQTT-3.3.5-1] overlapping subscriptions")
       if retained:
         logger.info("[MQTT-2.1.2-10] outgoing publish does not have retained flag set")
-      if self.overlapping_single:   
+      if self.overlapping_single:
         out_qos = min(self.se.qosOf(subscriber, topic), qos)
         self.__clients[subscriber].publishArrived(topic, message, out_qos)
       else:
@@ -133,7 +133,7 @@ class Brokers:
 
   def getSubscriptions(self, aClientid=None):
     return self.se.getSubscriptions(aClientid)
- 
+
 def unit_tests():
   bn = Brokers()
 
@@ -202,5 +202,3 @@ def unit_tests():
 
   bn.disconnect(Client1.id)
   bn.disconnect(Client2.id)
-
- 

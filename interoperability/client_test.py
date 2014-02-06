@@ -1,16 +1,16 @@
 """
 *******************************************************************
   Copyright (c) 2013, 2014 IBM Corp.
- 
+
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
-  and Eclipse Distribution License v1.0 which accompany this distribution. 
- 
-  The Eclipse Public License is available at 
+  and Eclipse Distribution License v1.0 which accompany this distribution.
+
+  The Eclipse Public License is available at
      http://www.eclipse.org/legal/epl-v10.html
-  and the Eclipse Distribution License is available at 
+  and the Eclipse Distribution License is available at
     http://www.eclipse.org/org/documents/edl-v10.php.
- 
+
   Contributors:
      Ian Craggs - initial implementation and/or documentation
 *******************************************************************
@@ -149,10 +149,10 @@ if __name__ == "__main__":
   aclient.subscribe(["fromb/+"], [2])
   time.sleep(.2)
   aclient.disconnect()
-  
+
   print(callback.messages)
   assert len(callback.messages) == 3
-  
+
   # clear retained messages
   callback.clear()
   aclient.connect(host=host, port=port, cleansession=True)
@@ -163,12 +163,12 @@ if __name__ == "__main__":
   aclient.subscribe(["fromb/#"], [2])
   time.sleep(.2)
   aclient.disconnect()
-  
+
   print(callback.messages)
   assert len(callback.messages) == 0
 
   # will messages
-  aclient.connect(host=host, port=port, cleansession=True, willFlag=True, willTopic="froma/willTopic", willMessage=b"client not disconnected", keepalive=2) 
+  aclient.connect(host=host, port=port, cleansession=True, willFlag=True, willTopic="froma/willTopic", willMessage=b"client not disconnected", keepalive=2)
   bclient.connect(host=host, port=port, cleansession=False)
   bclient.subscribe(["froma/willTopic"], [2])
   time.sleep(.1)
@@ -178,15 +178,15 @@ if __name__ == "__main__":
   print("messages %s", callback2.messages)
   assert len(callback2.messages) == 1 # should have the will message
 
-  
+
   # $ topics
   callback2.clear()
-  aclient.connect(host=host, port=port) 
+  aclient.connect(host=host, port=port)
   bclient.connect(host=host, port=port, cleansession=True, keepalive=0)
   bclient.subscribe(["$SYS/fromb/#"], [2])
   aclient.publish("fromb/qos 1", b"", 1, retained=True)
   time.sleep(.2)
-  assert len(callback2.messages) == 0 
+  assert len(callback2.messages) == 0
   aclient.publish("$SYS/fromb/qos 1", b"", 1, retained=True)
   time.sleep(.2)
   assert len(callback2.messages) in [1, 0]
@@ -216,19 +216,10 @@ if __name__ == "__main__":
 
   # keepalive
   callback2.clear()
-  aclient.connect(host=host, port=port, cleansession=True, keepalive=5, willFlag=True, willTopic="froma/willTopic", willMessage=b"keepalive expiry") 
+  aclient.connect(host=host, port=port, cleansession=True, keepalive=5, willFlag=True, willTopic="froma/willTopic", willMessage=b"keepalive expiry")
   bclient.connect(host=host, port=port, cleansession=False, keepalive=0)
   bclient.subscribe(["froma/willTopic"], [2])
   time.sleep(15)
   bclient.disconnect()
   assert len(callback2.messages) == 1 # should have the will message
   print("messages %s", callback2.messages)
-
- 
-
-
-
-
-
-
-

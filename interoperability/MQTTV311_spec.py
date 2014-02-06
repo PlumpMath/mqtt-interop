@@ -1,16 +1,16 @@
 """
 *******************************************************************
   Copyright (c) 2013, 2014 IBM Corp.
- 
+
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
-  and Eclipse Distribution License v1.0 which accompany this distribution. 
- 
-  The Eclipse Public License is available at 
+  and Eclipse Distribution License v1.0 which accompany this distribution.
+
+  The Eclipse Public License is available at
      http://www.eclipse.org/legal/epl-v10.html
-  and the Eclipse Distribution License is available at 
+  and the Eclipse Distribution License is available at
     http://www.eclipse.org/org/documents/edl-v10.php.
- 
+
   Contributors:
      Ian Craggs - initial implementation and/or documentation
 *******************************************************************
@@ -28,7 +28,7 @@ logger = logging.getLogger("MQTTV311_spec")
 logger.setLevel(logging.INFO)
 
 class Clients:
-	
+
 	def __init__(self):
 		self.msgid = 1
 		self.running = False
@@ -48,7 +48,7 @@ class Clients:
 		clientlist[sock] = self
 		self.running = True
 		try:
-			while True:		
+			while True:
 				packet = MQTTV3.unpackPacket(MQTTV3.getPacket(sock))
 				if packet == None:
 					break
@@ -96,7 +96,7 @@ def socket_close(sock : "socket"):
 	sock.close()
 
 mbt.finishedWith(socket_close, "sock")
-	
+
 
 """
 	protocol name           valid, invalid
@@ -104,8 +104,8 @@ mbt.finishedWith(socket_close, "sock")
 	clientID	        lengths 0, 1, 22, 23; characters?
 	cleansession	        true, false
 	will: topic, message, qos, retained
-	keepAlive                0, 60, 
-	username                 None, 
+	keepAlive                0, 60,
+	username                 None,
 	password                 None
 """
 @mbt.action
@@ -122,7 +122,7 @@ def connect(sock : "socket", clientid : "clientids", cleansession : "boolean", #
 	#if password:
 	#	self.passwordFlag = True
 	#	self.password = password
-	sock.send(connect.pack())	
+	sock.send(connect.pack())
 	time.sleep(0.5)
 	response = clientlist[sock].packets.pop(0) #MQTTV3.unpackPacket(MQTTV3.getPacket(sock))
 	logger.debug("+++connect response", response)
@@ -204,8 +204,8 @@ def puback(publish : "publishes"):
 		pubrec = MQTTV3.Pubrecs()
 		pubrec.messageIdentifier = publish.messageIdentifier
 		sock.send(pubrec.pack())
-		
-mbt.finishedWith(puback, "publish")		
+
+mbt.finishedWith(puback, "publish")
 
 @mbt.action
 def pubcomp(pubrel : "pubrels"):
@@ -223,7 +223,7 @@ def pingreq():
 
 """
  choice lists should be ordered but unique - ordered sets
-   options: 
+   options:
    sequenced - add sequence number
    frequency of choices (somehow)
 
@@ -272,7 +272,7 @@ def select(frees):
 			curname = random.choice(list(diff))
 			frees = [f for f in frees if f[0].getName() == curname]
 			after_socket_create.add(curname)
-	else:	
+	else:
 		for f in frees:
 			if f[0].getName() in ["pubrel", "puback", "pubcomp"]:
 				frees = [f]
@@ -285,7 +285,7 @@ mbt.model.selectCallback = select
 def restart():
 	client.msgid = 1
 
-mbt.model.restartCallback = restart	
+mbt.model.restartCallback = restart
 
 
 def between(str, str1, str2):
@@ -302,7 +302,7 @@ def replace(str, str1, str2, replace_str):
   start = str.find(str1)+len(str1)
   end = str.find(str2, start)
   return str[:start] + replace_str + str[end:]
-  
+
 
 def observationCheckCallback(observation, results):
 	# observation will be string representation of (socket, packet)
@@ -315,7 +315,7 @@ def observationCheckCallback(observation, results):
 				print("observation found")
 				return k
 		return None
-	else:	
+	else:
 		return observation if observation in results.keys()	else None
 
 if __name__ == "__main__":
@@ -324,5 +324,3 @@ if __name__ == "__main__":
 		stepping = True
 
 	mbt.run(stepping=stepping)
-
-
