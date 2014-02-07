@@ -1,16 +1,16 @@
 """
 *******************************************************************
   Copyright (c) 2013, 2014 IBM Corp.
- 
+
   All rights reserved. This program and the accompanying materials
   are made available under the terms of the Eclipse Public License v1.0
-  and Eclipse Distribution License v1.0 which accompany this distribution. 
- 
-  The Eclipse Public License is available at 
+  and Eclipse Distribution License v1.0 which accompany this distribution.
+
+  The Eclipse Public License is available at
      http://www.eclipse.org/legal/epl-v10.html
-  and the Eclipse Distribution License is available at 
+  and the Eclipse Distribution License is available at
     http://www.eclipse.org/org/documents/edl-v10.php.
- 
+
   Contributors:
      Ian Craggs - initial implementation and/or documentation
 *******************************************************************
@@ -85,7 +85,7 @@ class Client:
 
 
   def connect(self, host="localhost", port=1883, cleansession=True, keepalive=0, newsocket=True, protocolName=None,
-              willFlag=False, willTopic=None, willMessage=None, willQoS=2, willRetain=False):
+              willFlag=False, willTopic=None, willMessage=None, willQoS=2, willRetain=False, username=None, password=None):
     if newsocket:
       self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
       self.sock.connect((host, port))
@@ -94,6 +94,15 @@ class Client:
     connect.ClientIdentifier = self.clientid
     connect.CleanSession = cleansession
     connect.KeepAliveTimer = keepalive
+
+    if username:
+      connect.usernameFlag = True
+      connect.username = username
+
+    if password:
+      connect.passwordFlag = True
+      connect.password = password
+
     if protocolName:
       connect.ProtocolName = protocolName
 
@@ -199,4 +208,3 @@ if __name__ == "__main__":
   aclient.publish("k", "qos 2", 2)
   time.sleep(1.0)
   aclient.disconnect()
-
