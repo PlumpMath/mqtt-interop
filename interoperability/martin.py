@@ -43,8 +43,8 @@ aclient.registerCallback(callback)
 aclient.connect(host=host, port=port,
                 username=device['username'],
                 password=device['password'])
-aclient.subscribe(device['topic'], [0])
-aclient.publish(device['topic'].pop(), b"qos 0")
+aclient.subscribe(device['topics'], [0, 0])
+aclient.publish(device['topics'].pop(), b"qos 0")
 time.sleep(1)
 aclient.disconnect()
 
