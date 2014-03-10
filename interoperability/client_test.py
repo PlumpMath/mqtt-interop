@@ -140,7 +140,7 @@ def retained_message_test():
     if with_wildcard_topics:
       aclient.subscribe([wildtopics[5]], [2])
     else:
-      aclient.subscribe([topics[1], topics[2], topics[3]], [2])
+      aclient.subscribe([topics[1], topics[2], topics[3]], [2, 2, 2])
     time.sleep(.2)
     aclient.disconnect()
 
@@ -157,7 +157,7 @@ def retained_message_test():
     if with_wildcard_topics:
       aclient.subscribe([wildtopics[5]], [2])
     else:
-      aclient.subscribe([topics[1], topics[2], topics[3]], [2])
+      aclient.subscribe([topics[1], topics[2], topics[3]], [2, 2, 2])
     time.sleep(.2)
     aclient.disconnect()
 
