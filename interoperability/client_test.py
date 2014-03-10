@@ -57,7 +57,7 @@ def cleanup():
 
   for clientid in clientids:
     aclient = mqtt.client.Client("myclientid".encode("utf-8"))
-    aclient.connect(host=hostname, port=port, cleansession=True)
+    aclient.connect(host=hostname, port=port, cleansession=True, username=username, password=password)
     time.sleep(.1)
     aclient.disconnect()
     time.sleep(.1)
@@ -66,7 +66,7 @@ def cleanup():
   callback = Callbacks()
   aclient = mqtt.client.Client("clean retained".encode("utf-8"))
   aclient.registerCallback(callback)
-  aclient.connect(host=hostname, port=port, cleansession=True)
+  aclient.connect(host=hostname, port=port, cleansession=True, username=username, password=password)
   aclient.subscribe(["#"], [0])
   time.sleep(2) # wait for all retained messages to arrive
   for message in callback.messages:  
@@ -97,28 +97,29 @@ def basic_test():
     aclient = mqtt.client.Client("myclientid".encode("utf-8"))
     aclient.registerCallback(callback)
 
-    aclient.connect(host=host, port=port)
+    aclient.connect(host=host, port=port, username=username, password=password)
     aclient.disconnect()
 
-    aclient.connect(host=host, port=port)
+    aclient.connect(host=host, port=port, username=username, password=password)
     aclient.subscribe([topics[0]], [2])
     aclient.publish(topics[0], b"qos 0")
     aclient.publish(topics[0], b"qos 1", 1)
     aclient.publish(topics[0], b"qos 2", 2)
     aclient.disconnect()
+    print(len(callback.messages))
     assert len(callback.messages) == 3
   except:
     succeeded = False
 
   try:
-    aclient.connect(host=host, port=port)
-    aclient.connect(host=host, port=port, newsocket=False) # should fail - second connect on socket
+    aclient.connect(host=host, port=port, username=username, password=password)
+    aclient.connect(host=host, port=port, newsocket=False, username=username, password=password) # should fail - second connect on socket
     succeeded = False
   except Exception as exc:
     pass # exception expected
 
   try:
-    aclient.connect(host=host, port=port, protocolName="hj") # should fail - wrong protocol name
+    aclient.connect(host=host, port=port, protocolName="hj", username=username, password=password) # should fail - wrong protocol name
     succeeded = False
   except Exception as exc:
     pass # exception expected
@@ -132,7 +133,7 @@ def retained_message_test(qos0topic="fromb/qos 0", qos1topic="fromb/qos 1", qos2
   try:
     # retained messages
     callback.clear()
-    aclient.connect(host=host, port=port, cleansession=True)
+    aclient.connect(host=host, port=port, cleansession=True, username=username, password=password)
     aclient.publish(topics[1], b"qos 0", 0, retained=True)
     aclient.publish(topics[2], b"qos 1", 1, retained=True)
     aclient.publish(topics[3], b"qos 2", 2, retained=True)
@@ -145,7 +146,7 @@ def retained_message_test(qos0topic="fromb/qos 0", qos1topic="fromb/qos 1", qos2
 
     # clear retained messages
     callback.clear()
-    aclient.connect(host=host, port=port, cleansession=True)
+    aclient.connect(host=host, port=port, cleansession=True, username=username, password=password)
     aclient.publish(topics[1], b"", 0, retained=True)
     aclient.publish(topics[2], b"", 1, retained=True)
     aclient.publish(topics[3], b"", 2, retained=True)
@@ -168,8 +169,8 @@ def will_message_test():
   assert len(callback2.messages) == 0, callback2.messages
   try:
     aclient.connect(host=host, port=port, cleansession=True, willFlag=True, 
-      willTopic=topics[2], willMessage=b"client not disconnected", keepalive=2) 
-    bclient.connect(host=host, port=port, cleansession=False)
+      willTopic=topics[2], willMessage=b"client not disconnected", keepalive=2, username=username, password=password)
+    bclient.connect(host=host, port=port, cleansession=False, username=username, password=password)
     bclient.subscribe([topics[2]], [2])
     time.sleep(.1)
     aclient.terminate()
@@ -189,13 +190,13 @@ def zero_length_clientid_test():
     client0 = mqtt.client.Client("")
     fails = False
     try:
-      client0.connect(host=host, port=port, cleansession=False) # should be rejected
+      client0.connect(host=host, port=port, cleansession=False, username=username, password=password) # should be rejected
     except:
       fails = True
     assert fails == True
     fails = False
     try:
-      client0.connect(host=host, port=port, cleansession=True) # should work
+      client0.connect(host=host, port=port, cleansession=True, username=username, password=password) # should work
     except:
       fails = True
     assert fails == False
@@ -212,17 +213,17 @@ def offline_message_queueing_test():
     # message queueing for offline clients
     callback.clear()
 
-    aclient.connect(host=host, port=port, cleansession=False)
+    aclient.connect(host=host, port=port, cleansession=False, username=username, password=password)
     aclient.subscribe([wildtopics[5]], [2])
     aclient.disconnect()
 
-    bclient.connect(host=host, port=port)
+    bclient.connect(host=host, port=port, username=username, password=password)
     bclient.publish(topics[1], b"qos 0", 0)
     bclient.publish(topics[2], b"qos 1", 1)
     bclient.publish(topics[3], b"qos 2", 2)
     bclient.disconnect()
 
-    aclient.connect(host=host, port=port, cleansession=False)
+    aclient.connect(host=host, port=port, cleansession=False, username=username, password=password)
     time.sleep(.2)
     aclient.disconnect()
 
@@ -242,7 +243,7 @@ def overlapping_subscriptions_test():
   try:
     callback.clear()
     callback2.clear()
-    aclient.connect(host=host, port=port)
+    aclient.connect(host=host, port=port, username=username, password=password)
     aclient.subscribe([wildtopics[6], wildtopics[0]], [2, 1])
     aclient.publish(topics[3], b"overlapping topic filters", 2)
     time.sleep(1)
@@ -268,9 +269,9 @@ def keepalive_test():
   succeeded = True
   try:
     callback2.clear()
-    aclient.connect(host=host, port=port, cleansession=True, keepalive=5, willFlag=True, 
+    aclient.connect(host=host, port=port, cleansession=True, keepalive=5, willFlag=True, username=username, password=password,
           willTopic=topics[4], willMessage=b"keepalive expiry") 
-    bclient.connect(host=host, port=port, cleansession=True, keepalive=0)
+    bclient.connect(host=host, port=port, cleansession=True, keepalive=0, username=username, password=password)
     bclient.subscribe([topics[4]], [2])
     time.sleep(15)
     bclient.disconnect()
@@ -289,7 +290,7 @@ def redelivery_on_reconnect_test():
   try:
     callback.clear()
     callback2.clear()
-    bclient.connect(host=host, port=port, cleansession=False)
+    bclient.connect(host=host, port=port, cleansession=False, username=username, password=password)
     bclient.subscribe([wildtopics[6]], [2])
     bclient.pause() # stops background processing 
     bclient.publish(topics[1], b"", 1, retained=False)
@@ -297,7 +298,7 @@ def redelivery_on_reconnect_test():
     time.sleep(1)
     bclient.disconnect()
     assert len(callback2.messages) == 0
-    bclient.connect(host=host, port=port, cleansession=False)
+    bclient.connect(host=host, port=port, cleansession=False, username=username, password=password)
     bclient.resume()
     time.sleep(3)
     assert len(callback2.messages) == 2, "length should be 2: %s" % callback2.messages
@@ -314,7 +315,7 @@ def subscribe_failure_test():
   succeeded = True
   try:
     callback.clear()
-    aclient.connect(host=host, port=port)
+    aclient.connect(host=host, port=port, username=username, password=password)
     aclient.subscribe([nosubscribe_topics[0]], [2])
     time.sleep(.2)
     # subscribeds is a list of (msgid, [qos])
@@ -333,7 +334,7 @@ def dollar_topics_test():
   succeeded = True
   try:
     callback2.clear()
-    bclient.connect(host=host, port=port, cleansession=True, keepalive=0)
+    bclient.connect(host=host, port=port, cleansession=True, keepalive=0, username=username, password=password)
     bclient.subscribe([wildtopics[5]], [2])
     time.sleep(1) # wait for all retained messages, hopefully
     callback2.clear() 
@@ -352,7 +353,7 @@ if __name__ == "__main__":
   try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], "h:p:zdsn:", 
       ["help", "hostname=", "port=", "zero_length_clientid", "dollar_topics", 
-       "subscribe_failure", "nosubscribe_topic_filter=", "iterations="])
+       "subscribe_failure", "nosubscribe_topic_filter=", "iterations=", "username=", "password=", "topics="])
   except getopt.GetoptError as err:
     print(err) # will print something like "option -a not recognized"
     usage()
@@ -368,6 +369,8 @@ if __name__ == "__main__":
 
   host = "localhost"
   port = 1883
+  username = None
+  password = None
   for o, a in opts:
     if o in ("--help"):
       usage()
@@ -386,6 +389,12 @@ if __name__ == "__main__":
       port = int(a)
     elif o in ("--iterations"):
       iterations = int(a)
+    elif o in ("--username"):
+      username = a
+    elif o in ("--password"):
+      password = a
+    elif o in ("--topics"):
+      topics = a.split(",")
     else:
       assert False, "unhandled option"
 
