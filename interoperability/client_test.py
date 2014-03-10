@@ -106,9 +106,9 @@ def basic_test():
     aclient.publish(topics[0], b"qos 1", 1)
     aclient.publish(topics[0], b"qos 2", 2)
     aclient.disconnect()
-    print(len(callback.messages))
     assert len(callback.messages) == 3
   except:
+    traceback.print_exc()
     succeeded = False
 
   try:
@@ -127,8 +127,7 @@ def basic_test():
   print("Basic test", "succeeded" if succeeded else "failed")
   return succeeded
 
-def retained_message_test(qos0topic="fromb/qos 0", qos1topic="fromb/qos 1", qos2topic="fromb/qos2", 
-    wildcardtopic="fromb/+"):
+def retained_message_test():
   succeeded = False
   try:
     # retained messages
@@ -138,10 +137,14 @@ def retained_message_test(qos0topic="fromb/qos 0", qos1topic="fromb/qos 1", qos2
     aclient.publish(topics[2], b"qos 1", 1, retained=True)
     aclient.publish(topics[3], b"qos 2", 2, retained=True)
     time.sleep(.2)
-    aclient.subscribe([wildtopics[5]], [2])
+    if with_wildcard_topics:
+      aclient.subscribe([wildtopics[5]], [2])
+    else:
+      aclient.subscribe([topics[1], topics[2], topics[3]], [2])
     time.sleep(.2)
     aclient.disconnect()
 
+    print(len(callback.messages))
     assert len(callback.messages) == 3
 
     # clear retained messages
@@ -151,7 +154,10 @@ def retained_message_test(qos0topic="fromb/qos 0", qos1topic="fromb/qos 1", qos2
     aclient.publish(topics[2], b"", 1, retained=True)
     aclient.publish(topics[3], b"", 2, retained=True)
     time.sleep(.2) # wait for QoS 2 exchange to be completed
-    aclient.subscribe([wildtopics[5]], [2])
+    if with_wildcard_topics:
+      aclient.subscribe([wildtopics[5]], [2])
+    else:
+      aclient.subscribe([topics[1], topics[2], topics[3]], [2])
     time.sleep(.2)
     aclient.disconnect()
 
@@ -352,7 +358,7 @@ def dollar_topics_test():
 if __name__ == "__main__":
   try:
     opts, args = getopt.gnu_getopt(sys.argv[1:], "h:p:zdsn:", 
-      ["help", "hostname=", "port=", "zero_length_clientid", "dollar_topics", 
+      ["help", "hostname=", "port=", "zero_length_clientid", "dollar_topics", "disable_wildcards",
        "subscribe_failure", "nosubscribe_topic_filter=", "iterations=", "username=", "password=", "topics="])
   except getopt.GetoptError as err:
     print(err) # will print something like "option -a not recognized"
@@ -362,10 +368,11 @@ if __name__ == "__main__":
   run_dollar_topics_test = run_zero_length_clientid_test = run_subscribe_failure_test = False
   iterations = 1
 
-  global topics, wildtopics, nosubscribe_topics
+  global topics, wildtopics, nosubscribe_topics, with_wildcard_topics
   topics =  ("TopicA", "TopicA/B", "Topic/C", "TopicA/C", "/TopicA")
   wildtopics = ("TopicA/+", "+/C", "#", "/#", "/+", "+/+", "TopicA/#")
   nosubscribe_topics = ("nosubscribe",)
+  with_wildcard_topics = True
 
   host = "localhost"
   port = 1883
@@ -379,6 +386,8 @@ if __name__ == "__main__":
       run_zero_length_clientid_test = True
     elif o in ("-d", "--dollar_topics"):
       run_dollar_topics_test = True
+    elif o in ("--disable_wildcards"):
+      with_wildcard_topics = False
     elif o in ("-s", "--subscribe_failure"):
       run_subscribe_failure_test = True
     elif o in ("-n", "--nosubscribe_topic_filter"):
@@ -399,7 +408,7 @@ if __name__ == "__main__":
       assert False, "unhandled option"
 
   root = logging.getLogger()
-  root.setLevel(logging.ERROR)
+  root.setLevel(logging.INFO)
 
   print("hostname", host, "port", port)
 
