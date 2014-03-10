@@ -234,7 +234,7 @@ class Connects(Packets):
     if self.usernameFlag:
       buffer += writeUTF(self.username) 
     if self.passwordFlag:
-      buffer += writeBytes(self.password) 
+      buffer += writeUTF(self.password) 
     buffer = self.fh.pack(len(buffer)) + buffer
     return buffer
 
