@@ -110,19 +110,17 @@ mbt.finishedWith(socket_close, "sock")
 	password                 None
 """
 @mbt.action
-def connect(sock : "socket", clientid : "clientids", cleansession : "boolean", #willmsg : "willmsgs",
-#	    username : "usernames", password : "passwords"
-) -> "connackrc":
+def connect(sock : "socket", clientid : "clientids", cleansession : "boolean", username : "usernames", password : "passwords") -> "connackrc":
 	connect = MQTTV3.Connects()
 	connect.ClientIdentifier = clientid
 	connect.CleanStart = cleansession
 	connect.KeepAliveTimer = 60
-	#if username:
-	#	self.usernameFlag = True
-	#	self.username = username
-	#if password:
-	#	self.passwordFlag = True
-	#	self.password = password
+	if username:
+		connect.usernameFlag = True
+		connect.username = username
+	if password:
+		connect.passwordFlag = True
+		connect.password = password
 	sock.send(connect.pack())	
 	time.sleep(0.5)
 	response = clientlist[sock].packets.pop(0) #MQTTV3.unpackPacket(MQTTV3.getPacket(sock))
@@ -238,12 +236,14 @@ mbt.choices("ports", (1883,))
 mbt.choices("clientids", ("", "normal", "23 characters4567890123", "A clientid that is too long - should fail"))
 
 topics =  ("TopicA", "TopicA/B", "Topic/C", "TopicA/C", "/TopicA")
+
 wildTopics =  ("TopicA/+", "+/C", "#", "/#", "/+", "+/+")
 
 mbt.choices("topics", topics)
 mbt.choices("QoSs", (0, 1, 2))
 
 mbt.choices("topicLists", [(t,) for t in topics + wildTopics])
+
 mbt.choices("qosLists", [(0,), (1,), (2,)])
 
 
