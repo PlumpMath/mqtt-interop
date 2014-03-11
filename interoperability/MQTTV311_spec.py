@@ -237,12 +237,17 @@ mbt.choices("clientids", ("", "normal", "23 characters4567890123", "A clientid t
 
 topics =  ("TopicA", "TopicA/B", "Topic/C", "TopicA/C", "/TopicA")
 
+disable_wildcard_topics = True
+
 wildTopics =  ("TopicA/+", "+/C", "#", "/#", "/+", "+/+")
 
 mbt.choices("topics", topics)
 mbt.choices("QoSs", (0, 1, 2))
 
-mbt.choices("topicLists", [(t,) for t in topics + wildTopics])
+if not disable_wildcard_topics:
+	mbt.choices("topicLists", [(t,) for t in topics + wildTopics])
+else:
+	mbt.choices("topicLists", [(t,) for t in topics])
 
 mbt.choices("qosLists", [(0,), (1,), (2,)])
 
