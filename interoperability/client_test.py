@@ -144,7 +144,6 @@ def retained_message_test():
     time.sleep(.2)
     aclient.disconnect()
 
-    print(len(callback.messages))
     assert len(callback.messages) == 3
 
     # clear retained messages
@@ -408,7 +407,7 @@ if __name__ == "__main__":
       assert False, "unhandled option"
 
   root = logging.getLogger()
-  root.setLevel(logging.INFO)
+  root.setLevel(logging.ERROR)
 
   print("hostname", host, "port", port)
 
