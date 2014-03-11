@@ -41,7 +41,8 @@ def cleanup(hostname="localhost", port=1883):
 
 	for clientid in clientids:
 		aclient = mqtt.client.Client("myclientid".encode("utf-8"))
-		aclient.connect(host=hostname, port=port, cleansession=True)
+		aclient.connect(host=hostname, port=port, cleansession=True,
+				username=username, password=password)
 		time.sleep(.1)
 		aclient.disconnect()
 		time.sleep(.1)
@@ -50,7 +51,8 @@ def cleanup(hostname="localhost", port=1883):
 	callback = client_test.Callbacks()
 	aclient = mqtt.client.Client("clean retained".encode("utf-8"))
 	aclient.registerCallback(callback)
-	aclient.connect(host=hostname, port=port, cleansession=True)
+	aclient.connect(host=hostname, port=port, cleansession=True,
+			username=username, password=password)
 	aclient.subscribe(["#"], [0])
 	time.sleep(2) # wait for all retained messages to arrive
 	for message in callback.messages:  
@@ -65,7 +67,9 @@ def cleanup(hostname="localhost", port=1883):
 
 if __name__ == "__main__":
 	try:
-		opts, args = getopt.gnu_getopt(sys.argv[1:], "t:d:h:p:", ["testname=", "testdir=", "testdirectory=", "hostname=", "port="])
+		opts, args = getopt.gnu_getopt(sys.argv[1:], "t:d:h:p:",
+                    ["testname=", "testdir=", "testdirectory=", "hostname=",
+                      "port=", "username=", "password="])
 	except getopt.GetoptError as err:
 		print(err) # will print something like "option -a not recognized"
 		usage()
@@ -74,6 +78,8 @@ if __name__ == "__main__":
 	testname = testdirectory = None
 	hostname = "localhost"
 	port = 1883
+	username = None
+	password = None
 	for o, a in opts:
 		if o in ("--help"):
 			usage()
@@ -86,6 +92,10 @@ if __name__ == "__main__":
 			hostname = MQTTV311_spec.hostname = a
 		elif o in ("-p", "--port"):
 			port = MQTTV311_spec.port = int(a)
+		elif o in ("--username"):
+			username = a
+		elif o in ("--password"):
+			password = a
 		else:
 			assert False, "unhandled option"
 
