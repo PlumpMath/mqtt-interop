@@ -222,7 +222,10 @@ def offline_message_queueing_test():
     callback.clear()
 
     aclient.connect(host=host, port=port, cleansession=False, username=username, password=password)
-    aclient.subscribe([wildtopics[5]], [2])
+    if with_wildcard_topics:
+      aclient.subscribe([wildtopics[5]], [2])
+    else:
+      aclient.subscribe([topics[1], topics[2], topics[3]], [2, 2, 2])
     aclient.disconnect()
 
     bclient.connect(host=host, port=port, username=username, password=password)
@@ -299,7 +302,10 @@ def redelivery_on_reconnect_test():
     callback.clear()
     callback2.clear()
     bclient.connect(host=host, port=port, cleansession=False, username=username, password=password)
-    bclient.subscribe([wildtopics[6]], [2])
+    if with_wildcard_topics:
+      bclient.subscribe([wildtopics[6]], [2])
+    else:
+      bclient.subscribe([topics[1], topics[3]], [2, 2])
     bclient.pause() # stops background processing 
     bclient.publish(topics[1], b"", 1, retained=False)
     bclient.publish(topics[3], b"", 2, retained=False)
