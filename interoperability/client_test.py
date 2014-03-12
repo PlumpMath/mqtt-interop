@@ -424,7 +424,10 @@ if __name__ == "__main__":
   bclient.registerCallback(callback2)
 
   tests = [basic_test, retained_message_test, offline_message_queueing_test, will_message_test,
-           overlapping_subscriptions_test, keepalive_test, redelivery_on_reconnect_test]
+           keepalive_test, redelivery_on_reconnect_test]
+
+  if with_wildcard_topics:
+    tests.append(overlapping_subscriptions_test)
 
   if run_zero_length_clientid_test:
     tests.append(zero_length_clientid_test)
@@ -432,7 +435,7 @@ if __name__ == "__main__":
   if run_subscribe_failure_test:
     tests.append(subscribe_failure_test)
 
-  if dollar_topics_test:
+  if run_dollar_topics_test:
     tests.append(dollar_topics_test)
 
   for i in range(iterations):
