@@ -67,7 +67,10 @@ def cleanup():
   aclient = mqtt.client.Client("clean retained".encode("utf-8"))
   aclient.registerCallback(callback)
   aclient.connect(host=hostname, port=port, cleansession=True, username=username, password=password)
-  aclient.subscribe(["#"], [0])
+  if with_wildcard_topics:
+    aclient.subscribe(["#"], [0])
+  else:
+    aclient.subscribe(topics, [0, 0, 0, 0, 0])
   time.sleep(2) # wait for all retained messages to arrive
   for message in callback.messages:  
     if message[3]: # retained flag
@@ -403,6 +406,7 @@ if __name__ == "__main__":
       password = a
     elif o in ("--topics"):
       topics = a.split(",")
+      assert len(topics) == 5, "You need to provide exactly 5 topics"
     else:
       assert False, "unhandled option"
 
