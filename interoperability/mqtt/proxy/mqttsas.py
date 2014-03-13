@@ -102,7 +102,7 @@ def run():
     brokerport = 1883
 
   if brokerhost == myhost:
-    myport = brokerport + 1
+    myport = brokerport + 10
   else:
     myport = 1883
 
