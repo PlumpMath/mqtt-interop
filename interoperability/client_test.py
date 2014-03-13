@@ -201,13 +201,13 @@ def zero_length_clientid_test():
       client0.connect(host=host, port=port, cleansession=False, username=username, password=password) # should be rejected
     except:
       fails = True
-    assert fails == True
+    assert fails == True, "This server allows zero length clientid."
     fails = False
     try:
       client0.connect(host=host, port=port, cleansession=True, username=username, password=password) # should work
     except:
       fails = True
-    assert fails == False
+    assert fails == False, "This server doesn't allow zero length clientid even for a clean sessions."
     client0.disconnect() 
   except:
     traceback.print_exc()
