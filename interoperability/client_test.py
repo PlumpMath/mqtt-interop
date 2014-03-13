@@ -114,18 +114,18 @@ def basic_test():
     traceback.print_exc()
     succeeded = False
 
-  ##try:
-  ##  aclient.connect(host=host, port=port, username=username, password=password)
-  ##  aclient.connect(host=host, port=port, newsocket=False, username=username, password=password) # should fail - second connect on socket
-  ##  succeeded = False
-  ##except Exception as exc:
-  ##  pass # exception expected
+  try:
+    aclient.connect(host=host, port=port, username=username, password=password)
+    aclient.connect(host=host, port=port, newsocket=False, username=username, password=password) # should fail - second connect on socket
+    succeeded = False
+  except Exception as exc:
+    pass # exception expected
 
-  ##try:
-  ##  aclient.connect(host=host, port=port, protocolName="hj", username=username, password=password) # should fail - wrong protocol name
-  ##  succeeded = False
-  ##except Exception as exc:
-  ##  pass # exception expected
+  try:
+    aclient.connect(host=host, port=port, protocolName="hj", username=username, password=password) # should fail - wrong protocol name
+    succeeded = False
+  except Exception as exc:
+    pass # exception expected
 
   print("Basic test", "succeeded" if succeeded else "failed")
   return succeeded
