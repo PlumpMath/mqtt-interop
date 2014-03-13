@@ -102,7 +102,7 @@ def create():
 if __name__ == "__main__":
 	try:
 		opts, args = getopt.gnu_getopt(sys.argv[1:], "t:d:h:p:",
-		    ["username=", "password=", "topics=", "disable_wildcards"])
+		    ["username=", "password=", "topics=", "disable_wildcards", "zero_length_clientid"])
 	except getopt.GetoptError as err:
 		print(err) # will print something like "option -a not recognized"
 		sys.exit(2)
@@ -121,6 +121,8 @@ if __name__ == "__main__":
 			MQTTV311_spec.topics = tuple(a.split(","))
 		elif o in ("--disable_wildcards"):
 			MQTTV311_spec.disable_wildcard_topics = True
+		elif o in ("--zero_length_clientid"):
+			MQTTV311_spec.zero_length_clientid = True
 		else:
 			assert False, "unhandled option"
 

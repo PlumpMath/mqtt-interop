@@ -32,6 +32,7 @@ usernames = None
 
 topics = None
 disable_wildcard_topics = False
+zero_length_clientid = False
 
 logger = logging.getLogger("MQTTV311_spec")
 #logger.setLevel(logging.INFO)
@@ -244,8 +245,6 @@ mbt.choices("hostnames", ("localhost",))
 mbt.choices("ports", (1883,))
 
 mbt.choices("QoSs", (0, 1, 2))
-mbt.choices("clientids", ("", "normal", "23 characters4567890123", "A clientid that is too long - should fail"))
-
 
 builtinTopics =  ("TopicA", "TopicA/B", "Topic/C", "TopicA/C", "/TopicA")
 wildTopics =  ("TopicA/+", "+/C", "#", "/#", "/+", "+/+")
@@ -266,6 +265,11 @@ def setup():
 		mbt.choices("topicLists", [(t,) for t in baseTopicList + wildTopics])
 	else:
 		mbt.choices("topicLists", [(t,) for t in baseTopicList])
+
+	if not zero_length_clientid:
+		mbt.choices("clientids", ("normal", "23 characters4567890123", "A clientid that is too long - should fail"))
+	else:
+		mbt.choices("clientids", ("", "normal", "23 characters4567890123", "A clientid that is too long - should fail"))
 
 mbt.choices("qosLists", [(0,), (1,), (2,)])
 
