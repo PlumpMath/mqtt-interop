@@ -579,6 +579,8 @@ class Tests:
 		while curline:
 			self.lineno += 1
 			curline = curline.strip()
+			#if curline.startswith("[MQTT-"):
+			#	logger.info(curline)
 			if curline.startswith("INFO"):
 				words = curline.split(" ", 4)[4] # remove level, date, time, logname
 				curline = ''.join(words)
