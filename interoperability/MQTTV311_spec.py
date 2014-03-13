@@ -24,6 +24,15 @@ clientlist = {}
 
 test = None
 
+hostname = None
+port = None
+
+passwords = None
+usernames = None
+
+topics = None
+disable_wildcard_topics = False
+
 logger = logging.getLogger("MQTTV311_spec")
 #logger.setLevel(logging.INFO)
 
@@ -233,24 +242,32 @@ mbt.choices("boolean", (True, False))
 
 mbt.choices("hostnames", ("localhost",))
 mbt.choices("ports", (1883,))
+
+mbt.choices("QoSs", (0, 1, 2))
 mbt.choices("clientids", ("", "normal", "23 characters4567890123", "A clientid that is too long - should fail"))
 
-topics =  ("TopicA", "TopicA/B", "Topic/C", "TopicA/C", "/TopicA")
 
-disable_wildcard_topics = True
-
+builtinTopics =  ("TopicA", "TopicA/B", "Topic/C", "TopicA/C", "/TopicA")
 wildTopics =  ("TopicA/+", "+/C", "#", "/#", "/+", "+/+")
 
-mbt.choices("topics", topics)
-mbt.choices("QoSs", (0, 1, 2))
+def setup():
 
-if not disable_wildcard_topics:
-	mbt.choices("topicLists", [(t,) for t in topics + wildTopics])
-else:
-	mbt.choices("topicLists", [(t,) for t in topics])
+	if usernames:
+		mbt.choices("usernames", usernames)
+	if passwords:
+		mbt.choices("passwords", passwords)
+
+	if topics:
+		baseTopicList = topics
+	else:
+		baseTopicList = builtinTopics
+
+	if not disable_wildcard_topics:
+		mbt.choices("topicLists", [(t,) for t in baseTopicList + wildTopics])
+	else:
+		mbt.choices("topicLists", [(t,) for t in baseTopicList])
 
 mbt.choices("qosLists", [(0,), (1,), (2,)])
-
 
 mbt.choices("payloads", (b"", b"1", b"333", b"long"*512), sequenced=True)
 
@@ -326,9 +343,6 @@ def observationCheckCallback(observation, results):
 		return None
 	else:	
 		return observation if observation in results.keys()	else None
-
-hostname = None
-port = None
 
 def callCallback(action, kwargs):
 	if action.getName() == "socket_create" and (hostname or port):

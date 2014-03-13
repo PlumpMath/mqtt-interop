@@ -53,6 +53,7 @@ def cleanup(hostname="localhost", port=1883):
 	aclient.registerCallback(callback)
 	aclient.connect(host=hostname, port=port, cleansession=True,
 			username=username, password=password)
+	#TODO: make use of disable_wildcard_topics here
 	aclient.subscribe(["#"], [0])
 	time.sleep(2) # wait for all retained messages to arrive
 	for message in callback.messages:  
@@ -69,10 +70,9 @@ if __name__ == "__main__":
 	try:
 		opts, args = getopt.gnu_getopt(sys.argv[1:], "t:d:h:p:",
                     ["testname=", "testdir=", "testdirectory=", "hostname=",
-                      "port=", "username=", "password="])
+                      "port=", "username=", "password=", "topics=", "disable_wildcards"])
 	except getopt.GetoptError as err:
 		print(err) # will print something like "option -a not recognized"
-		usage()
 		sys.exit(2)
 
 	testname = testdirectory = None
@@ -82,7 +82,7 @@ if __name__ == "__main__":
 	password = None
 	for o, a in opts:
 		if o in ("--help"):
-			usage()
+			print("Not yet implemented.");
 			sys.exit()
 		elif o in ("-t", "--testname"):
 			testname = a
@@ -94,10 +94,18 @@ if __name__ == "__main__":
 			port = MQTTV311_spec.port = int(a)
 		elif o in ("--username"):
 			username = a
+			MQTTV311_spec.usernames = (a,)
 		elif o in ("--password"):
 			password = a
+			MQTTV311_spec.passwords = (a,)
+		elif o in ("--topics"):
+			MQTTV311_spec.topics = tuple(a.split(","))
+		elif o in ("--disable_wildcards"):
+			MQTTV311_spec.disable_wildcard_topics = True
 		else:
 			assert False, "unhandled option"
+
+	MQTTV311_spec.setup()
 
 	if testname:
 		testnames = [testname]

@@ -33,7 +33,7 @@ Do store tests that reach a conformance statement in a different way.
 
 """
 
-import os, shutil, threading, time, logging, logging.handlers, queue, sys
+import getopt, os, shutil, threading, time, logging, logging.handlers, queue, sys
 
 import mqtt, MQTTV311_spec
 
@@ -100,10 +100,33 @@ def create():
 
 
 if __name__ == "__main__":
-	#try:
+	try:
+		opts, args = getopt.gnu_getopt(sys.argv[1:], "t:d:h:p:",
+		    ["username=", "password=", "topics=", "disable_wildcards"])
+	except getopt.GetoptError as err:
+		print(err) # will print something like "option -a not recognized"
+		sys.exit(2)
+
+	for o, a in opts:
+		if o in ("--help"):
+			print("Not yet implemented.");
+			sys.exit()
+		elif o in ("--username"):
+			username = a
+			MQTTV311_spec.usernames = (a,)
+		elif o in ("--password"):
+			password = a
+			MQTTV311_spec.passwords = (a,)
+		elif o in ("--topics"):
+			MQTTV311_spec.topics = tuple(a.split(","))
+		elif o in ("--disable_wildcards"):
+			MQTTV311_spec.disable_wildcard_topics = True
+		else:
+			assert False, "unhandled option"
+
+	MQTTV311_spec.setup()
+
 	os.system("rm -rf tests")
-	#except:
-	#	pass
 	os.mkdir("tests")
 	test_no = 0
 	logger.info("Generation starting")
